@@ -23,6 +23,7 @@ import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { getIgnoredPaths, listLocalFiles } from '../../api/modules/apps/file'
 import { join, resolve as resolvePath, sep } from 'path'
 import { listenBuild } from '../../api/modules/build'
+import { createLinkEventsWriter } from './linkEvents'
 
 import { randomBytes } from 'crypto'
 import { readFileSync } from 'fs'
@@ -53,6 +54,7 @@ interface LinkOptions {
   clean?: boolean
   setup?: boolean
   noWatch?: boolean
+  eventsFile?: string
 }
 
 const DELETE_SIGN = chalk.red('D')
@@ -353,15 +355,20 @@ export async function appLink(options: LinkOptions) {
 
   let unlistenBuild
   const extraData = { yarnFilesManager: null }
+  const events = options.eventsFile ? createLinkEventsWriter(options.eventsFile, appId) : null
+  const onStatus = events?.onBuildStatus
   try {
     const buildTrigger = performInitialLink.bind(this, root, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     if (options.noWatch) {
-      await listenBuild(subject, buildTrigger, { waitCompletion: true })
+      await listenBuild(subject, buildTrigger, { waitCompletion: true, onStatus })
       return
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onError }).then(prop('unlisten'))
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onError, onStatus }).then(
+      prop('unlisten')
+    )
   } catch (e) {
+    events?.emit({ event: 'error', code: e.response?.data?.code, message: e.response?.data?.message ?? e.message })
     if (e.response) {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder-hub/.test(data.message)) {

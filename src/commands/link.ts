@@ -1,4 +1,5 @@
 import { flags as oclifFlags } from '@oclif/command'
+import { resolve } from 'path'
 
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import { appLink } from '../modules/apps/link'
@@ -23,6 +24,11 @@ export default class Link extends CustomCommand {
       dependsOn: ['workspace'],
     }),
     clean: oclifFlags.boolean({ char: 'c', description: 'Cleans builder cache', default: false }),
+    'events-file': oclifFlags.string({
+      description:
+        'Writes the build events as JSON lines to this file (emptied at start): build start/success/fail, then ready, or stale when the workspace still serves another linked version.',
+      required: false,
+    }),
     setup: oclifFlags.boolean({
       char: 's',
       description: `Locally sets typings before linking [see ${ColorifyConstants.COMMAND_OR_VTEX_REF(
@@ -58,6 +64,7 @@ export default class Link extends CustomCommand {
       flags: { account, setup, clean, unsafe, workspace },
     } = this.parse(Link)
     const noWatch = flags['no-watch']
-    await appLink({ account, workspace, setup, clean, unsafe, noWatch })
+    const eventsFile = flags['events-file'] && resolve(flags['events-file'])
+    await appLink({ account, workspace, setup, clean, unsafe, noWatch, eventsFile })
   }
 }

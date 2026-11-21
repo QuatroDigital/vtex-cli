@@ -8,6 +8,7 @@ interface ListeningOptions {
   waitCompletion?: boolean
   onBuild?: AnyFunction
   onError?: { [code: string]: AnyFunction }
+  onStatus?: (message: Message) => void
   senders?: string[]
 }
 
@@ -62,8 +63,19 @@ const runErrorAction = (code, message, errorActions) => {
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   const listenPromise = new Promise((resolve, reject) => {
     const { account, workspace } = SessionManager.getSingleton()
-    const { waitCompletion, onError = {}, onBuild = false, context = { account, workspace }, senders = null } = options
+    const {
+      waitCompletion,
+      onError = {},
+      onBuild = false,
+      onStatus,
+      context = { account, workspace },
+      senders = null,
+    } = options
     const callback = (eventType, eventData) => {
+      if (eventType === 'build.status' && onStatus) {
+        onStatus(eventData)
+      }
+
       if (eventType === 'build.status') {
         const {
           body: { code, details, message },
