@@ -25,6 +25,7 @@ import { ErrorReport } from '../../api/error/ErrorReport'
 import * as fse from 'fs-extra'
 import path from 'path'
 import { sortBy, uniqBy } from 'ramda'
+import { ensureRuntimeFoldersIgnored, PathConstants } from '../../lib/constants/Paths'
 import { getHelpSubject, isHelpInvocation, buildCommandGroups, collectCommands, renderCommands } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -96,6 +97,7 @@ const checkAndFixSymlink = async options => {
 }
 
 const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: boolean) => {
+  ensureRuntimeFoldersIgnored(PathConstants.VTEX_FOLDER)
   const cliPreTasksStart = process.hrtime()
   CLIPreTasks.getCLIPreTasks(pkg).runTasks(options.id)
   TelemetryCollector.getCollector().registerMetric({

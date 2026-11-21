@@ -7,4 +7,8 @@ export enum EnvVariablesConstants {
   // Ignore CLIPreTasks checks: All checks made on CLIPreTasks will be skipped.
   // Setting this to any string value will work: `IGNORE_CLIPRETASKS=* vtex whoami`
   IGNORE_CLIPRETASKS = 'IGNORE_PRECHECKS',
+
+  // Folder holding the session, logs and telemetry, instead of the nearest `.vtex/session`
+  // or `~/.vtex`: `VTEX_HOME=./.vtex vtex whoami`
+  VTEX_HOME = 'VTEX_HOME',
 }
