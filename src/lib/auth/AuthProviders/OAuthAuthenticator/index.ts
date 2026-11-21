@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { createHash } from 'crypto'
 import isWsl from 'is-wsl'
-import jwt from 'jsonwebtoken'
 import { join } from 'path'
 import logger from '../../../../api/logger'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
@@ -11,6 +10,7 @@ import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
 import { LoginServer } from './LoginServer'
+import { decodeJwtPayload } from '../../Token'
 import { switchOpen } from '../../../../modules/featureFlag/featureFlagDecider'
 
 export class OAuthAuthenticator extends AuthProviderBase {
@@ -60,7 +60,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
       }
 
       const { token, refreshToken } = await loginServer.tokens
-      const decodedToken = jwt.decode(token)
+      const decodedToken = decodeJwtPayload(token)
       const login: string = decodedToken.sub
       this.closeChromeTabIfMac(loginServer.loginCallbackUrl)
       return { login, token, refreshToken }

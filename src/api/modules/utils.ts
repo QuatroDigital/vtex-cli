@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import axios from 'axios'
 import chalk from 'chalk'
 import { ArrayChange, diffArrays } from 'diff'
@@ -17,6 +16,7 @@ import { SessionManager } from '../session/SessionManager'
 import { createTable } from '../table'
 import { promptConfirm } from './prompts'
 import { reactTermsOfUse } from '../constants/Messages'
+import { decodeJwtPayload } from '../../lib/auth/Token'
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -281,7 +281,7 @@ const BR_VTEX_ACCOUNT = '@vtex.com.br'
 export const continueAfterReactTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
   const session = SessionManager.getSingleton()
   const { token } = session
-  const decodedToken = jwt.decode(token)
+  const decodedToken = decodeJwtPayload(token)
   const userEmail = decodedToken?.[EMAIL_KEY] as string
   if (userEmail && (userEmail.endsWith(I_VTEX_ACCOUNT) || userEmail.endsWith(BR_VTEX_ACCOUNT))) {
     return true

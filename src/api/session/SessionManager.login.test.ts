@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import { AuthProviderBase } from '../../lib/auth/AuthProviders'
 import { SessionManager } from './SessionManager'
 import { SessionsPersisterBase } from './SessionsPersister'
@@ -23,8 +22,9 @@ jest.mock('../logger', () => ({
 
 const createClientMock = VTEXID.createClient as jest.MockedFunction<typeof VTEXID.createClient>
 
-function signJwt(expOffsetSeconds: number, sub = 'user@vtex.com') {
-  return jwt.sign({ sub, exp: Math.floor(Date.now() / 1000) + expOffsetSeconds }, 'test-secret')
+function createJwt(expOffsetSeconds: number, sub = 'user@vtex.com') {
+  const payload = { sub, exp: Math.floor(Date.now() / 1000) + expOffsetSeconds }
+  return `${[{ alg: 'none' }, payload].map(part => Buffer.from(JSON.stringify(part)).toString('base64url')).join('.')}.`
 }
 
 function createPersister(overrides: Partial<Record<string, jest.Mock>> = {}): SessionsPersisterBase {
@@ -66,7 +66,7 @@ describe('SessionManager.login', () => {
   })
 
   it('uses a valid cached account token and does not call refresh or OAuth', async () => {
-    const cached = signJwt(3600)
+    const cached = createJwt(3600)
     const persister = createPersister({
       getAccountToken: jest.fn(() => cached),
     })
@@ -84,8 +84,8 @@ describe('SessionManager.login', () => {
   })
 
   it('refreshes when cached token is invalid but a refresh token exists', async () => {
-    const expired = signJwt(-3600)
-    const refreshedJwt = signJwt(7200)
+    const expired = createJwt(-3600)
+    const refreshedJwt = createJwt(7200)
     const persister = createPersister({
       getAccountToken: jest.fn(() => expired),
       getAccountRefreshToken: jest.fn(() => 'stored-refresh'),
@@ -113,8 +113,8 @@ describe('SessionManager.login', () => {
   })
 
   it('falls back to OAuth when refresh throws', async () => {
-    const expired = signJwt(-3600)
-    const oauthJwt = signJwt(3600)
+    const expired = createJwt(-3600)
+    const oauthJwt = createJwt(3600)
     const persister = createPersister({
       getAccountToken: jest.fn(() => expired),
       getAccountRefreshToken: jest.fn(() => 'bad-refresh'),
@@ -144,8 +144,8 @@ describe('SessionManager.login', () => {
   })
 
   it('falls back to OAuth when there is no stored refresh token', async () => {
-    const expired = signJwt(-3600)
-    const oauthJwt = signJwt(3600)
+    const expired = createJwt(-3600)
+    const oauthJwt = createJwt(3600)
     const persister = createPersister({
       getAccountToken: jest.fn(() => expired),
       getAccountRefreshToken: jest.fn(() => ''),
@@ -168,8 +168,8 @@ describe('SessionManager.login', () => {
   })
 
   it('ignores a valid cache when useCachedToken is false and still refreshes if a refresh token exists', async () => {
-    const cachedValid = signJwt(3600)
-    const refreshedJwt = signJwt(7200)
+    const cachedValid = createJwt(3600)
+    const refreshedJwt = createJwt(7200)
     const persister = createPersister({
       getAccountToken: jest.fn(() => cachedValid),
       getAccountRefreshToken: jest.fn(() => 'rt'),
@@ -194,8 +194,8 @@ describe('SessionManager.login', () => {
   })
 
   it('does not persist refresh token from OAuth when login omits refreshToken', async () => {
-    const expired = signJwt(-3600)
-    const oauthJwt = signJwt(3600)
+    const expired = createJwt(-3600)
+    const oauthJwt = createJwt(3600)
     const persister = createPersister({
       getAccountToken: jest.fn(() => expired),
       getAccountRefreshToken: jest.fn(() => ''),
@@ -222,7 +222,7 @@ describe('SessionManager.logout', () => {
   })
 
   it('invalidates the local token and clears persisted data', async () => {
-    const token = signJwt(3600)
+    const token = createJwt(3600)
     const invalidateToolbeltToken = jest.fn().mockResolvedValue(undefined)
     createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
     const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
@@ -238,7 +238,7 @@ describe('SessionManager.logout', () => {
   })
 
   it('invalidates the browser auth cookie when requested', async () => {
-    const token = signJwt(3600)
+    const token = createJwt(3600)
     const invalidateToolbeltToken = jest.fn().mockResolvedValue(undefined)
     createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
     const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
@@ -254,7 +254,7 @@ describe('SessionManager.logout', () => {
   })
 
   it('swallows invalidation errors and still clears persisted data', async () => {
-    const token = signJwt(3600)
+    const token = createJwt(3600)
     const invalidateToolbeltToken = jest.fn().mockRejectedValue(new Error('network'))
     createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
     const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
