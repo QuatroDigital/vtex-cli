@@ -1,0 +1,14 @@
+#!/bin/sh
+# lib/ is build output, and projects that install this checkout (`file:../vtex-cli`) run it, so it is
+# rebuilt whenever a checkout or merge changes the sources. In place, so running `vtex link`s keep
+# their files.
+[ "$3" = "0" ] && exit 0 # a file checkout, not a branch switch
+[ -d node_modules ] || exit 0
+[ -e "$(git rev-parse --git-path rebase-merge)" ] || [ -e "$(git rev-parse --git-path rebase-apply)" ] && exit 0
+
+old=${1:-ORIG_HEAD}
+new=${2:-HEAD}
+git diff --quiet "$old" "$new" -- src bin package.json 2>/dev/null && exit 0
+
+echo "Rebuilding lib/ for the checked-out sources…"
+npx --no -- tsc && npx --no -- oclif-dev manifest >/dev/null || echo "lib/ rebuild failed: run npm run build" >&2
