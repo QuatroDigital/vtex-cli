@@ -635,11 +635,14 @@ OPTIONS
   -h, --help                 show CLI help
   -v, --verbose              Show debug level logs
   -w, --workspace=workspace  Workspace to login into
+  --local                    Keeps this login in the git repository's root .vtex/ folder, shared by every folder and
+                             worktree inside it, instead of ~/.vtex.
   --trace                    Ensure all requests to VTEX IO are traced
 
 EXAMPLES
   vtex login
   vtex login storecomponents
+  vtex login storecomponents --local
 ```
 
 _See code:  [build/commands/login.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/login.ts)_
