@@ -1,5 +1,7 @@
 # Commands
 
+Every command also accepts `--path <dir>`, which runs it as if started in that folder (like `git -C`).
+
 * [`vtex add APPID [ITHAPPID]`](#vtex-add-appid-ithappid)
 * [`vtex browse [PATH]`](#vtex-browse-path)
 * [`vtex config get CONFIGNAME`](#vtex-configget-configname)
@@ -492,6 +494,10 @@ OPTIONS
                              flag.
 
   -c, --clean                Clean builder cache
+
+  --events-file=events-file  Writes the build events as JSON lines to this file (emptied at start): build
+                             start/success/fail, then ready, or stale when the workspace still serves another linked
+                             version.
 
   -h, --help                 show CLI help
 
