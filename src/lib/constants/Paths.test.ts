@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { ensureRuntimeFoldersIgnored, resolveVtexFolder } from './Paths'
@@ -19,21 +19,7 @@ describe('resolveVtexFolder', () => {
     expect(resolveVtexFolder({}, appFolder, home)).toBe(join(project, '.vtex'))
   })
 
-  it("uses the git repository's root, also from a worktree of it", () => {
-    const repo = join(root, 'repo')
-    const worktree = join(repo, 'tmp', 'feature')
-    const worktreeGitDir = join(repo, '.git', 'worktrees', 'feature')
-    mkdirSync(worktreeGitDir, { recursive: true })
-    mkdirSync(join(repo, 'packages', 'app'), { recursive: true })
-    mkdirSync(join(worktree, 'packages', 'app'), { recursive: true })
-    writeFileSync(join(worktreeGitDir, 'commondir'), '../..\n')
-    writeFileSync(join(worktree, '.git'), `gitdir: ${worktreeGitDir}\n`)
-
-    expect(resolveVtexFolder({}, join(repo, 'packages', 'app'), home)).toBe(join(repo, '.vtex'))
-    expect(resolveVtexFolder({}, join(worktree, 'packages', 'app'), home)).toBe(join(repo, '.vtex'))
-  })
-
-  it('falls back to ~/.vtex outside any project or repository', () => {
+  it('falls back to ~/.vtex when no project folder exists', () => {
     expect(resolveVtexFolder({}, root, home)).toBe(join(home, '.vtex'))
   })
 })

@@ -1,12 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { homedir } from 'os'
 import { dirname, join, resolve } from 'path'
 import { EnvVariablesConstants } from './EnvVariables'
 
-// The login and workspace live in a `.vtex` folder: `VTEX_HOME` if set, else the nearest `.vtex/session`
-// from the working directory up (a folder that wants its own session), else the git repository's root,
-// so every package of a monorepo shares one session. A worktree's `.git` file leads back to the main
-// checkout, so worktrees share its session too. Outside any repository, `~/.vtex`.
+// A project (or a git worktree) opts into its own login and workspace by having a `.vtex/session`
+// folder: the nearest one from the working directory up wins, so separate terminals can work on
+// separate accounts or workspaces at once. Anything under the home folder reaches `~/.vtex` last.
 export const resolveVtexFolder = (env = process.env, cwd = process.cwd(), home = homedir()): string => {
   const fromEnv = env[EnvVariablesConstants.VTEX_HOME]
   if (fromEnv) {
@@ -17,25 +16,6 @@ export const resolveVtexFolder = (env = process.env, cwd = process.cwd(), home =
     const candidate = join(dir, '.vtex')
     if (existsSync(join(candidate, 'session'))) {
       return candidate
-    }
-
-    const dotGit = join(dir, '.git')
-    if (existsSync(dotGit)) {
-      if (statSync(dotGit).isDirectory()) {
-        return candidate
-      }
-
-      // `gitdir: <main>/.git/worktrees/<name>`, whose `commondir` points back to `<main>/.git`.
-      const gitDir = resolve(
-        dir,
-        readFileSync(dotGit, 'utf8')
-          .replace(/^gitdir:/, '')
-          .trim()
-      )
-      const commonDir = join(gitDir, 'commondir')
-      return existsSync(commonDir)
-        ? join(dirname(resolve(gitDir, readFileSync(commonDir, 'utf8').trim())), '.vtex')
-        : candidate
     }
 
     if (dirname(dir) === dir) {
