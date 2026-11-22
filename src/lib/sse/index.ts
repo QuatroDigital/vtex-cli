@@ -23,13 +23,6 @@ const onError = (type: string) => (err: EventSourceError) => {
 
 const parseMessage = (msg: MessageJSON): Message => {
   const { sender, subject, level, body }: Message = JSON.parse(msg.data)
-  // TEMP: record raw events to design `link --json`; never commit.
-  if (process.env.VTEX_EVENTS_FILE) {
-    require('fs').appendFileSync(
-      process.env.VTEX_EVENTS_FILE,
-      `${JSON.stringify({ ts: new Date().toISOString(), sender, subject, level, body })}\n`
-    )
-  }
   return {
     body,
     level: levelAdapter[level] || level,
