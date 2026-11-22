@@ -22,6 +22,21 @@ if (semver.gte(process.versions.node, '22.8.0')) {
   module.enableCompileCache()
 }
 
+// `--path <dir>` runs any command as if started in <dir> (like `git -C`), so
+// scripts don't need `cd <app> && vtex …`. Only arguments before `--` count.
+const argsEnd = process.argv.includes('--') ? process.argv.indexOf('--') : process.argv.length
+const pathIndex = process.argv.slice(0, argsEnd).findIndex(arg => arg === '--path' || arg.startsWith('--path='))
+if (pathIndex !== -1) {
+  const [flag] = process.argv.splice(pathIndex, 1)
+  const dir = flag === '--path' ? process.argv.splice(pathIndex, 1)[0] : flag.slice('--path='.length)
+  try {
+    process.chdir(dir)
+  } catch (err) {
+    console.error(`--path: cannot use "${dir}": ${err.code || err.message}`)
+    process.exit(1)
+  }
+}
+
 if (require.main === module) {
   require('@oclif/command')
     .run()
