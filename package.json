@@ -140,7 +140,7 @@
     "@types/node-notifier": "^5.4.0",
     "@types/prompts": "^2.0.3",
     "@types/proper-lockfile": "^4.1.1",
-    "@types/ramda": "types/npm-ramda#dist",
+    "@types/ramda": "https://codeload.github.com/types/npm-ramda/tar.gz/9529aa3c8ff70ff84afcbc0be83443c00f30ea90",
     "@types/randomstring": "^1.1.6",
     "@types/semver-diff": "2.1.1",
     "@types/tar": "4.0.3",
