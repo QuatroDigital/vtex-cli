@@ -5,6 +5,7 @@
   "bin": "bin/run",
   "main": "lib/api/index.js",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
     "watch": "npm run build && rm oclif.manifest.json && bash ./scripts/symlinkPlugin.sh && bash ./scripts/symlink.sh && node --watch-path=src --watch-path=tsconfig.json --watch-preserve-output node_modules/typescript/bin/tsc --incremental",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "eslint ./src --cache --ext ts --config .eslintrc",
