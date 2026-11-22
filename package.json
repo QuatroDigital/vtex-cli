@@ -127,7 +127,7 @@
     "yarn": "^1.22.4"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1",
+    "@oclif/dev-cli": "^1.26.10",
     "@types/async-retry": "1.4.1",
     "@types/co-body": "^5.1.0",
     "@types/configstore": "^4.0.0",
