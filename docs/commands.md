@@ -1,5 +1,7 @@
 # Commands
 
+Every command also accepts `--path <dir>`, which runs it as if started in that folder (like `git -C`).
+
 * [`vtex add APPID [ITHAPPID]`](#vtex-add-appid-ithappid)
 * [`vtex browse [PATH]`](#vtex-browse-path)
 * [`vtex config get CONFIGNAME`](#vtex-configget-configname)
@@ -493,6 +495,10 @@ OPTIONS
 
   -c, --clean                Clean builder cache
 
+  --events-file=events-file  Writes the build events as JSON lines to this file (emptied at start): build
+                             start/success/fail, then ready, or stale when the workspace still serves another linked
+                             version.
+
   -h, --help                 show CLI help
 
   -s, --setup                Setup typings before linking [see vtex setup --help]
@@ -629,11 +635,14 @@ OPTIONS
   -h, --help                 show CLI help
   -v, --verbose              Show debug level logs
   -w, --workspace=workspace  Workspace to login into
+  --local                    Keeps this login in the git repository's root .vtex/ folder, shared by every folder and
+                             worktree inside it, instead of ~/.vtex.
   --trace                    Ensure all requests to VTEX IO are traced
 
 EXAMPLES
   vtex login
   vtex login storecomponents
+  vtex login storecomponents --local
 ```
 
 _See code:  [build/commands/login.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/login.ts)_
