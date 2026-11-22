@@ -49,6 +49,7 @@ if (process.argv[2] === 'login' && process.argv.includes('--local')) {
 }
 
 if (require.main === module) {
+  require('../lib/lib/unrefLogClientTimer').unrefLogClientTimer()
   require('@oclif/command')
     .run()
     .then(require('@oclif/command/flush'))
