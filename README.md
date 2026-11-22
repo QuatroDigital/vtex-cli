@@ -1,47 +1,51 @@
 # vtex-cli
 
-Fork of [vtex/toolbelt](https://github.com/vtex/toolbelt), the VTEX IO CLI, with a few additions for scripts, monorepos and AI agents. Every upstream command works as before (`vtex help`); versions start at 14.x so `vtex --version` tells the fork apart from upstream's 4.x.
+**The VTEX IO CLI, ready for monorepos, scripts and AI agents.**
+
+Every `vtex` command you already use, from [vtex/toolbelt](https://github.com/vtex/toolbelt), plus what upstream is missing:
+
+- **One login per repository.** Keep each project on its own account and workspace; `vtex use` in one repo never moves another.
+- **Run it from anywhere in a monorepo.** Point any command at an app folder with `--path`, no `cd` needed.
+- **Know when a link is really live.** `vtex link --events-file` writes machine-readable events, including when the workspace is still serving an old version.
+- **Runs on Node 24+.** Upstream crashes on load there.
 
 ## Install
 
-Add it to the project as a devDependency instead of installing it globally:
+Add it to your project as a devDependency (pick the latest version from [Releases](https://github.com/QuatroDigital/vtex-cli/releases)):
 
 ```sh
-npm install --save-dev https://github.com/QuatroDigital/vtex-cli/releases/download/v14.0.0/vtex-14.0.0.tgz
-npx --no -- vtex --version
+npm install --save-dev https://github.com/QuatroDigital/vtex-cli/releases/download/v<version>/vtex-<version>.tgz
+npx --no -- vtex --version   # vtex/14.x
 ```
 
-Runs on Node 24+.
+Versions start at 14.x, so `vtex --version` tells it apart from upstream's 4.x.
 
-## What the fork adds
-
-### Login and workspace per project
-
-Opt in once per repository (or git worktree):
+## One login per repository
 
 ```sh
-mkdir -p .vtex/session
-vtex login <account>
+vtex login <account> --local
 ```
 
-The CLI keeps its session in the nearest `.vtex/session` found from the current directory up, so each project keeps its own account and workspace, and `vtex use` in one project doesn't move the others. The session folder gets its own `.gitignore`, so login tokens stay out of git.
+The login and workspace live in the repository's root `.vtex/` instead of `~/.vtex`. Every package of a monorepo, and every git worktree inside the repository, shares them. The CLI git-ignores its own folders there, so tokens never reach a commit.
 
-Resolution order: `VTEX_HOME` if set, else the nearest `.vtex/session`, else `~/.vtex` (upstream's behavior).
+Without `--local`, nothing changes: `~/.vtex` stays the default. `VTEX_HOME` overrides both.
 
-### `--path <dir>`
-
-Run any command as if it were started in another folder, like `git -C`:
+## Run from anywhere: `--path`
 
 ```sh
 vtex --path apps/my-app link
-vtex --path=apps/my-app deploy
+vtex --path=apps/my-app publish
 ```
 
-Useful for monorepo scripts that would otherwise need `cd apps/my-app && vtex …`. The per-project session is resolved from that folder too.
+Runs any command as if started in that folder, like `git -C`. Handy in monorepo scripts and for agents that shouldn't `cd`.
 
-### `vtex link --events-file <file>`
+## Follow a link from scripts: `--events-file`
 
-Writes the link's build events as JSON lines (the file is emptied at start), so scripts can follow a link without parsing its terminal output:
+```sh
+vtex link --events-file tmp/link.jsonl
+```
+
+One JSON object per line, so a script or an AI agent can wait for the link instead of parsing colored logs:
 
 ```json
 {"ts":"2026-01-01T12:00:00.000Z","app":"vendor.my-app@1.0.0","event":"build","status":"start"}
@@ -49,15 +53,11 @@ Writes the link's build events as JSON lines (the file is emptied at start), so 
 {"ts":"2026-01-01T12:00:21.000Z","app":"vendor.my-app@1.0.0","event":"ready"}
 ```
 
-- `build` with `status` `start`, `success` or `fail` (`fail` adds `errorCode` and `message`).
-- After each success: `ready` once the workspace serves this version, or `stale` with the version still linked (a patch on top of a failed build can report success while the old link keeps serving).
-- `error` when the link itself fails.
+- `build`: `start`, `success` or `fail` (with `errorCode` and `message`).
+- `ready`: the workspace serves this version.
+- `stale`: the build succeeded but the workspace still serves another linked version, which happens after a patch on top of a failed build.
+- `error`: the link itself failed.
 
-## Development
+## Everything else
 
-```sh
-npm install
-npm run build
-npm test
-npm run watch   # rebuilds on change; see docs/contributing.md
-```
+Commands, workspaces and app development work exactly as upstream: run `vtex help`, or see the [upstream repository](https://github.com/vtex/toolbelt).

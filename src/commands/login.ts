@@ -11,6 +11,7 @@ export default class Login extends CustomCommand {
   static examples = [
     `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex login')}`,
     `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex login')} storecomponents`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex login')} storecomponents --local`,
   ]
 
   static flags = {
@@ -18,6 +19,11 @@ export default class Login extends CustomCommand {
     workspace: oclifFlags.string({
       char: 'w',
       description: `Logs in the specified ${ColorifyConstants.ID('workspace')}.`,
+    }),
+    // Read by bin/run, which points the CLI folder at the repository before any module loads.
+    local: oclifFlags.boolean({
+      description:
+        "Keeps this login in the git repository's root .vtex/ folder, shared by every folder and worktree inside it, instead of ~/.vtex.",
     }),
   }
 
