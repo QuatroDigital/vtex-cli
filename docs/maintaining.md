@@ -60,8 +60,8 @@ Here's how you deploy on `AWS S3`:
 - Fire this command on terminal in `toolbelt` project root path.
 
 ```bash
-yarn release
-yarn release:win
+npm run release
+npm run release:win
 ```
 
 This [command](https://github.com/vtex/toolbelt/blob/ef67f52cd200ab08445684767c839319b86b5454/package.json#L19) will pack and publish on AWS S3.

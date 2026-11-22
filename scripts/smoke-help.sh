@@ -11,7 +11,7 @@ cd "$ROOT_DIR"
 
 if [ ! -d lib ]; then
   echo "lib/ not found — building..."
-  yarn build || exit 1
+  npm run build || exit 1
 fi
 
 FAKE_HOME="$(mktemp -d)"
@@ -63,6 +63,7 @@ run_case "vtex help <command>" help link
 run_case "vtex <command> --help" link --help
 run_case "vtex <command> -h" link -h
 run_case "vtex --help" --help
+run_case "vtex --path <dir> help <command>" --path "$FAKE_HOME" help link
 
 if [ $FAILURES -gt 0 ]; then
   echo "$FAILURES smoke test case(s) failed"
