@@ -6,8 +6,6 @@ node_modules/
 /tmp/
 
 # Files
-*-debug.log
-*-error.log
 *.tgz
 .DS_Store
 .eslintcache
