@@ -1,14 +1,14 @@
-.vscode
-coverage
-node_modules
-/lib
+# Directories
+coverage/
+/dist/
+/lib/
+node_modules/
+/tmp/
+
+# Files
 *-debug.log
 *-error.log
-package-lock.json
+*.tgz
 .DS_Store
 .eslintcache
-.eslintcache-react
 oclif.manifest.json
-/dist
-/tmp
-*.tgz

@@ -4,7 +4,7 @@ We're glad you want to contribute!
 
 ### Local development
 
-You can use the command `yarn watch` to test the VTEX Toolbelt locally. It creates a [_symlink_](https://en.wikipedia.org/wiki/Symbolic_link) named `vtex-test`, with which you can test your code as you develop.
+You can use the command `npm run watch` to test the VTEX Toolbelt locally. It creates a [_symlink_](https://en.wikipedia.org/wiki/Symbolic_link) named `vtex-test`, with which you can test your code as you develop.
 
 To be able to use it you'll have to add `$HOME/.vtex/dev/bin` to your `PATH` environment variable. This may differ across different OSs, but follow this steps:
 
@@ -13,13 +13,13 @@ To be able to use it you'll have to add `$HOME/.vtex/dev/bin` to your `PATH` env
 3. Save it.
 4. Run the command `source ~/.bashrc` (or corresponding file).
 
-That's it! Now you're able to run `yarn watch` and, on another terminal session, use the command `vtex-test` as an alias to what you're developing.
+That's it! Now you're able to run `npm run watch` and, on another terminal session, use the command `vtex-test` as an alias to what you're developing.
 
 ### Building the binaries locally and testing them
 You can build the binaries and test it locally. You can run the commands:
 
 ```
-yarn build && yarn oclif-dev pack
+npm run build && npx oclif-dev pack
 ```
 
 A folder named `dist` will be created with all the binaries for different OS. The command below enable to use the binaries for MacOS:
@@ -48,8 +48,8 @@ npm -g un vtex
 2. Build the project locally and create a .tgz file:
 
 ```
-yarn install
-yarn build
+npm install
+npm run build
 npm pack
 ```
 

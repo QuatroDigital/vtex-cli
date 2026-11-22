@@ -29,9 +29,9 @@ jobs:
           aws-region: us-east-1
       - name: Deploy on AWS
         run: |
-          yarn install --ignore-scripts
-          yarn release
-          yarn release:win
+          npm ci --ignore-scripts
+          npm run release
+          npm run release:win
         env:
             IS_CI: "true"
   publish-success:

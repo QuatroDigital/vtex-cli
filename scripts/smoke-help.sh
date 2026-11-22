@@ -11,7 +11,7 @@ cd "$ROOT_DIR"
 
 if [ ! -d lib ]; then
   echo "lib/ not found — building..."
-  yarn build || exit 1
+  npm run build || exit 1
 fi
 
 FAKE_HOME="$(mktemp -d)"
