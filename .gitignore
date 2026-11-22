@@ -1,4 +1,5 @@
 # Directories
+/.vtex/*/
 coverage/
 /dist/
 /lib/
