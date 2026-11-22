@@ -15,18 +15,11 @@ Runs on Node 24+.
 
 ## What the fork adds
 
-### Login and workspace per project
+### One login per repository
 
-Opt in once per repository (or git worktree):
+Inside a git repository, the CLI keeps its login and workspace in the repository's root `.vtex/` folder: every package of a monorepo shares one session, git worktrees share the main checkout's, and `vtex use` in one repository doesn't move the others. Log in once per repository with `vtex login <account>`. The CLI's folders there (`session/`, `logs/`, …) get their own `.gitignore`, so login tokens stay out of git.
 
-```sh
-mkdir -p .vtex/session
-vtex login <account>
-```
-
-The CLI keeps its session in the nearest `.vtex/session` found from the current directory up, so each project keeps its own account and workspace, and `vtex use` in one project doesn't move the others. The session folder gets its own `.gitignore`, so login tokens stay out of git.
-
-Resolution order: `VTEX_HOME` if set, else the nearest `.vtex/session`, else `~/.vtex` (upstream's behavior).
+Resolution order: `VTEX_HOME` if set, else the nearest `.vtex/session` from the current folder up (create one for a folder or worktree that needs its own workspace), else the repository's root `.vtex/`, else `~/.vtex` outside any repository.
 
 ### `--path <dir>`
 

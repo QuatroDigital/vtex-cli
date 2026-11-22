@@ -15,6 +15,7 @@ if [ ! -d lib ]; then
 fi
 
 FAKE_HOME="$(mktemp -d)"
+export VTEX_HOME="$FAKE_HOME/.vtex"
 trap 'rm -rf "$FAKE_HOME"' EXIT
 
 # On a fresh build the init hook autofixes the node_modules/vtex symlink and
