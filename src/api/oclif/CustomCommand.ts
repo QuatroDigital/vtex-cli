@@ -17,6 +17,8 @@ export abstract class CustomCommand extends OclifCommand {
       description: `Ensures all requests to ${ColorifyConstants.ID('VTEX IO')} are traced.`,
       default: false,
     }),
+    // Handled by bin/run, which changes into the folder before oclif parses arguments.
+    path: oclifFlags.string({ description: 'Runs the command as if started in this folder (like git -C).' }),
   }
 
   getAllArgs(rawParse: ParsingToken[]) {
