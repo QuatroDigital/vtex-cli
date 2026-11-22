@@ -17,9 +17,15 @@ Runs on Node 24+.
 
 ### One login per repository
 
-Inside a git repository, the CLI keeps its login and workspace in the repository's root `.vtex/` folder: every package of a monorepo shares one session, git worktrees share the main checkout's, and `vtex use` in one repository doesn't move the others. Log in once per repository with `vtex login <account>`. The CLI's folders there (`session/`, `logs/`, …) get their own `.gitignore`, so login tokens stay out of git.
+By default the CLI keeps its login and workspace in `~/.vtex`, shared by every project, as upstream does. To give a repository its own, log in with `--local`:
 
-Resolution order: `VTEX_HOME` if set, else the nearest `.vtex/session` from the current folder up (create one for a folder or worktree that needs its own workspace), else the repository's root `.vtex/`, else `~/.vtex` outside any repository.
+```sh
+vtex login <account> --local
+```
+
+It creates `.vtex/session` at the repository root (the main checkout's root when run from a worktree). From then on every folder inside the repository finds it from the current folder up: every package of a monorepo, and worktrees under it, share that login and workspace, and `vtex use` there doesn't move other projects. The CLI's folders there (`session/`, `logs/`, …) get their own `.gitignore`, so login tokens stay out of git.
+
+Resolution order: `VTEX_HOME` if set, else the nearest `.vtex/session` from the current folder up, else `~/.vtex`.
 
 ### `--path <dir>`
 

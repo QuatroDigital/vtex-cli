@@ -37,6 +37,17 @@ if (pathIndex !== -1) {
   }
 }
 
+// `vtex login --local` keeps the login in the git repository's root `.vtex/`, where every folder below
+// finds it from then on. The CLI folder is resolved once, as modules load, so it is set here first.
+if (process.argv[2] === 'login' && process.argv.includes('--local')) {
+  const repoRoot = require('../lib/lib/repoRoot').findRepoRoot(process.cwd())
+  if (!repoRoot) {
+    console.error('--local: not inside a git repository')
+    process.exit(1)
+  }
+  process.env.VTEX_HOME = require('path').join(repoRoot, '.vtex')
+}
+
 if (require.main === module) {
   require('@oclif/command')
     .run()
