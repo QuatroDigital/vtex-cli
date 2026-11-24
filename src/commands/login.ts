@@ -28,7 +28,11 @@ export default class Login extends CustomCommand {
   }
 
   static args = [
-    { name: 'account', required: false, description: `${ColorifyConstants.ID('Account')} name to log in.` },
+    {
+      name: 'account',
+      required: false,
+      description: `${ColorifyConstants.ID('Account')} name to log in. Defaults to the account in .vtex/config.json.`,
+    },
   ]
 
   async run() {
