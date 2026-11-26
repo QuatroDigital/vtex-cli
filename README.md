@@ -28,6 +28,14 @@ vtex login <account> --local
 
 The login and workspace live in the repository's root `.vtex/` instead of `~/.vtex`. Every package of a monorepo, and every git worktree inside the repository, shares them. The CLI git-ignores its own folders there, so tokens never reach a commit.
 
+Commit the account in `.vtex/config.json`, so nobody has to type it:
+
+```json
+{ "account": "storecomponents" }
+```
+
+Then `vtex login --local` logs straight into it.
+
 Without `--local`, nothing changes: `~/.vtex` stays the default. `VTEX_HOME` overrides both.
 
 ## Run from anywhere: `--path`

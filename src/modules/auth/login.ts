@@ -1,12 +1,15 @@
 import { TemplateRenderer } from '@vtex/toolbelt-message-renderer'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
 import { ToolbeltConfig } from '../../api/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
+import { PathConstants } from '../../lib/constants/Paths'
 import { handleErrorCreatingWorkspace, workspaceCreator } from '../../api/modules/workspace/create'
 import welcome from './welcome'
 
@@ -69,7 +72,13 @@ const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspa
   }
 
   if (!previousAccount) {
-    return { targetAccount: await promptDesiredAccount(), targetWorkspace }
+    // A committed `.vtex/config.json` (`{ "account": "..." }`) names the project's account, so a fresh login skips the prompt.
+    const configPath = join(PathConstants.VTEX_FOLDER, 'config.json')
+    const configAccount: string | undefined = existsSync(configPath)
+      ? JSON.parse(readFileSync(configPath, 'utf8')).account
+      : undefined
+
+    return { targetAccount: configAccount || (await promptDesiredAccount()), targetWorkspace }
   }
 
   if (previousWorkspace && !optionWorkspace) {

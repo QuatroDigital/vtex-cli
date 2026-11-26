@@ -645,6 +645,8 @@ EXAMPLES
   vtex login storecomponents --local
 ```
 
+Without `ACCOUNT` and with no previous login, it uses the `account` from `.vtex/config.json`, when that file exists.
+
 _See code:  [build/commands/login.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/login.ts)_
 
 ## `vtex logout`
