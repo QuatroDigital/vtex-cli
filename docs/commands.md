@@ -503,6 +503,9 @@ OPTIONS
 
   -s, --setup                Setup typings before linking [see vtex setup --help]
 
+  --stop                     Stops the link running for the app in the current directory, from any terminal. The app
+                             stays linked.
+
   -u, --unsafe               Allow links with Typescript errors
 
   -v, --verbose              Show debug level logs
@@ -514,9 +517,12 @@ OPTIONS
 
   --trace                    Ensure all requests to VTEX IO are traced
 
-EXAMPLE
+EXAMPLES
   vtex link -a youraccount -w yourworkspace
+  vtex link --stop
 ```
+
+A second `vtex link` of an app that is already linking from another terminal is refused, naming the running PID.
 
 _See code:  [build/commands/link.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/link.ts)_
 

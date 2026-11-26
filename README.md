@@ -7,6 +7,7 @@ Every `vtex` command you already use, from [vtex/toolbelt](https://github.com/vt
 - **One login per repository.** Keep each project on its own account and workspace; `vtex use` in one repo never moves another.
 - **Run it from anywhere in a monorepo.** Point any command at an app folder with `--path`, no `cd` needed.
 - **Know when a link is really live.** `vtex link --events-file` writes machine-readable events, including when the workspace is still serving an old version.
+- **One link per app, stoppable from anywhere.** `vtex link --stop` ends the running link, and a second link of the same app is refused.
 - **Runs on Node 24+.** Upstream crashes on load there.
 
 ## Install
@@ -65,6 +66,14 @@ One JSON object per line, so a script or an AI agent can wait for the link inste
 - `ready`: the workspace serves this version.
 - `stale`: the build succeeded but the workspace still serves another linked version, which happens after a patch on top of a failed build.
 - `error`: the link itself failed.
+
+## Stop a link from anywhere: `vtex link --stop`
+
+```sh
+vtex --path apps/my-app link --stop
+```
+
+Stops the link running for that app, from any terminal, with no PID to look up. Starting a second link of an app that is already linking is refused, with the PID and the command to stop it. The app stays linked in the workspace, as after Ctrl+C.
 
 ## Everything else
 
